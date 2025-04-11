@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Login Page</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .container {
+            position: relative;
+            width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            padding: 40px;
+            transition: all 0.5s ease;
+            animation: fadeIn 1s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -40%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            transform: skewX(-15deg);
+            pointer-events: none;
+            transition: 0.5s;
+        }
+        
+        .container:hover::before {
+            left: 120%;
+        }
+        
+        .form-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .title {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            position: relative;
+            text-align: center;
+        }
+        
+        .title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -10px;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: #fff;
+            border-radius: 3px;
+        }
+        
+        .input-group {
+            width: 100%;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            outline: none;
+            border-radius: 35px;
+            font-size: 16px;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .input-group label {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus + label,
+        .input-group input:valid + label {
+            top: -10px;
+            left: 15px;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0 10px;
+            border-radius: 10px;
+        }
+        
+        .toggle-form {
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .toggle-form span {
+            color: #ffcc00;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-form span:hover {
+            color: #ffdd33;
+            text-shadow: 0 0 5px rgba(255, 220, 0, 0.5);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: #fff;
+            border: none;
+            outline: none;
+            border-radius: 35px;
+            color: #667eea;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            background: #ffcc00;
+            color: #fff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .popup {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 20px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            transform: scale(0.7);
+            opacity: 0;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .popup-overlay.active .popup {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .popup h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .popup p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+        
+        .popup-btn {
+            padding: 10px 20px;
+            background: #fff;
+            border: none;
+            border-radius: 30px;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .popup-btn:hover {
+            background: #ffcc00;
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Floating Bubbles Background */
+        .bubbles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            top: 0;
+            left: 0;
+        }
+        
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: rise 15s infinite ease-in;
+        }
+        
+        .bubble:nth-child(1) {
+            width: 40px;
+            height: 40px;
+            left: 10%;
+            animation-duration: 8s;
+        }
+        
+        .bubble:nth-child(2) {
+            width: 20px;
+            height: 20px;
+            left: 20%;
+            animation-duration: 5s;
+            animation-delay: 1s;
+        }
+        
+        .bubble:nth-child(3) {
+            width: 50px;
+            height: 50px;
+            left: 35%;
+            animation-duration: 7s;
+            animation-delay: 2s;
+        }
+        
+        .bubble:nth-child(4) {
+            width: 80px;
+            height: 80px;
+            left: 50%;
+            animation-duration: 11s;
+            animation-delay: 0s;
+        }
+        
+        .bubble:nth-child(5) {
+            width: 35px;
+            height: 35px;
+            left: 55%;
+            animation-duration: 6s;
+            animation-delay: 1s;
+        }
+        
+        .bubble:nth-child(6) {
+            width: 45px;
+            height: 45px;
+            left: 65%;
+            animation-duration: 8s;
+            animation-delay: 3s;
+        }
+        
+        .bubble:nth-child(7) {
+            width: 25px;
+            height: 25px;
+            left: 75%;
+            animation-duration: 7s;
+            animation-delay: 2s;
+        }
+        
+        .bubble:nth-child(8) {
+            width: 80px;
+            height: 80px;
+            left: 80%;
+            animation-duration: 6s;
+            animation-delay: 1s;
+        }
+        
+        @keyframes rise {
+            0% {
+                bottom: -100px;
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(100px);
+            }
+            100% {
+                bottom: 1080px;
+                transform: translateX(-200px);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                width: 90%;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bubbles">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+    
+    <div class="container" id="loginContainer">
+        <div class="form-container">
+            <h1 class="title">Login</h1>
+            <div class="input-group">
+                <input type="text" id="loginEmail" required>
+                <label for="loginEmail">Email</label>
+            </div>
+            <div class="input-group">
+                <input type="password" id="loginPassword" required>
+                <label for="loginPassword">Password</label>
+            </div>
+            <button class="btn" id="loginBtn">Login</button>
+            <p class="toggle-form">Don't have an account? <span id="showSignup">Sign up</span></p>
+        </div>
+    </div>
+    
+    <div class="container" id="signupContainer" style="display: none;">
+        <div class="form-container">
+            <h1 class="title">Sign Up</h1>
+            <div class="input-group">
+                <input type="text" id="signupName" required>
+                <label for="signupName">Full Name</label>
+            </div>
+            <div class="input-group">
+                <input type="email" id="signupEmail" required>
+                <label for="signupEmail">Email</label>
+            </div>
+            <div class="input-group">
+                <input type="password" id="signupPassword" required>
+                <label for="signupPassword">Password</label>
+            </div>
+            <div class="input-group">
+                <input type="password" id="signupConfirmPassword" required>
+                <label for="signupConfirmPassword">Confirm Password</label>
+            </div>
+            <button class="btn" id="signupBtn">Sign Up</button>
+            <p class="toggle-form">Already have an account? <span id="showLogin">Sign in</span></p>
+        </div>
+    </div>
+    
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup">
+            <h2>Login Successful!</h2>
+            <p>Welcome back to our platform.</p>
+            <button class="popup-btn" id="popupBtn">Go Back</button>
+        </div>
+    </div>
+    
+    <script>
+        // Toggle between login and signup forms
+        const showSignup = document.getElementById('showSignup');
+        const showLogin = document.getElementById('showLogin');
+        const loginContainer = document.getElementById('loginContainer');
+        const signupContainer = document.getElementById('signupContainer');
+        
+        showSignup.addEventListener('click', () => {
+            loginContainer.style.display = 'none';
+            signupContainer.style.display = 'block';
+            signupContainer.style.animation = 'fadeIn 0.5s ease';
+        });
+        
+        showLogin.addEventListener('click', () => {
+            signupContainer.style.display = 'none';
+            loginContainer.style.display = 'block';
+            loginContainer.style.animation = 'fadeIn 0.5s ease';
+        });
+        
+        // Popup functionality
+        const popupOverlay = document.getElementById('popupOverlay');
+        const popupBtn = document.getElementById('popupBtn');
+        
+        // Dummy user data (in a real app, this would be server-side)
+        const validUsers = [
+            { email: 'user@example.com', password: 'password123', name: 'Test User' }
+        ];
+        
+        // Login functionality
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Check if user exists
+            const user = validUsers.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                // Show success popup
+                popupOverlay.classList.add('active');
+            } else {
+                alert('Invalid email or password. Please try again.');
+            }
+        });
+        
+        // Signup functionality
+        document.getElementById('signupBtn').addEventListener('click', () => {
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            
+            // Simple validation
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long!');
+                return;
+            }
+            
+            // Check if email already exists
+            if (validUsers.some(u => u.email === email)) {
+                alert('Email already registered!');
+                return;
+            }
+            
+            // Add new user (in a real app, this would be a server request)
+            validUsers.push({ email, password, name });
+            
+            // Show success popup
+            popupOverlay.classList.add('active');
+            
+            // Switch to login form
+            setTimeout(() => {
+                signupContainer.style.display = 'none';
+                loginContainer.style.display = 'block';
+                loginContainer.style.animation = 'fadeIn 0.5s ease';
+            }, 2000);
+        });
+        
+        // Popup close button
+        popupBtn.addEventListener('click', () => {
+            popupOverlay.classList.remove('active');
+            
+            // Clear form fields
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('signupName').value = '';
+            document.getElementById('signupEmail').value = '';
+            document.getElementById('signupPassword').value = '';
+            document.getElementById('signupConfirmPassword').value = '';
+            
+            // Reset labels (if fields were empty when submitted)
+            document.querySelectorAll('.input-group input').forEach(input => {
+                if (input.value === '') {
+                    input.nextElementSibling.style.top = '15px';
+                    input.nextElementSibling.style.fontSize = '16px';
+                    input.nextElementSibling.style.background = 'transparent';
+                }
+            });
+        });
+        
+        // Input field animations
+        document.querySelectorAll('.input-group input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.nextElementSibling.style.top = '-10px';
+                input.nextElementSibling.style.left = '15px';
+                input.nextElementSibling.style.fontSize = '12px';
+                input.nextElementSibling.style.background = 'rgba(255, 255, 255, 0.2)';
+                input.nextElementSibling.style.padding = '0 10px';
+                input.nextElementSibling.style.borderRadius = '10px';
+            });
+            
+            // Only move label back if field is empty
+            input.addEventListener('blur', () => {
+                if (input.value === '') {
+                    input.nextElementSibling.style.top = '15px';
+                    input.nextElementSibling.style.fontSize = '16px';
+                    input.nextElementSibling.style.background = 'transparent';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
